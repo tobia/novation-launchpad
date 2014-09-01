@@ -141,7 +141,7 @@ gridPage.onGridButton = function(row, column, pressed)
 
    if (TEMPMODE === TempMode.SCENE)
    {
-      trackBank.launchScene(column);
+      trackBank.launchScene(this.mixerAlignedGrid ? row : column);
    }
    else if (TEMPMODE === TempMode.OFF)
    {

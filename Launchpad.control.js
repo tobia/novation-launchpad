@@ -5,6 +5,7 @@ host.defineController("Novation", "Launchpad", "1.0", "DC7C601D-C6D9-4627-875C-D
 host.defineMidiPorts(1, 1);
 host.addDeviceNameBasedDiscoveryPair(["Launchpad"], ["Launchpad"]);
 host.addDeviceNameBasedDiscoveryPair(["Launchpad S"], ["Launchpad S"]);
+host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini"], ["Launchpad Mini"]);
 
 for(var i=1; i<20; i++)
 {
@@ -13,6 +14,8 @@ for(var i=1; i<20; i++)
    host.addDeviceNameBasedDiscoveryPair(["Launchpad MIDI " + i.toString()], ["Launchpad MIDI " + i.toString()]);
    host.addDeviceNameBasedDiscoveryPair(["Launchpad S " + i.toString()], ["Launchpad S " + i.toString()]);
    host.addDeviceNameBasedDiscoveryPair(["Launchpad S MIDI " + i.toString()], ["Launchpad S MIDI " + i.toString()]);
+   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini " + i.toString()], ["Launchpad Mini " + i.toString()]);
+   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini MIDI " + i.toString()], ["Launchpad Mini MIDI " + i.toString()]);
 }
 
 if(host.platformIsLinux())
@@ -20,6 +23,7 @@ if(host.platformIsLinux())
 	for(var i=1; i<16; i++)
 	{
 	   host.addDeviceNameBasedDiscoveryPair(["Launchpad S " + + i.toString() + " MIDI 1"], ["Launchpad S " + + i.toString() + " MIDI 1"]);
+	   host.addDeviceNameBasedDiscoveryPair(["Launchpad Mini " + + i.toString() + " MIDI 1"], ["Launchpad Mini " + + i.toString() + " MIDI 1"]);
 	}
 }
 
@@ -130,9 +134,9 @@ function init()
    noteInput = host.getMidiInPort(0).createNoteInput("Launchpad", "80????", "90????");
    noteInput.setShouldConsumeEvents(false);
 
-   transport = host.createTransportSection();
+   transport = host.createTransport();
 
-   trackBank = host.createMainTrackBankSection(NUM_TRACKS, NUM_SENDS, NUM_SCENES);
+   trackBank = host.createMainTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES);
 
    for(var t=0; t<NUM_TRACKS; t++)
    {
@@ -177,16 +181,16 @@ function init()
    {
       gridPage.canScrollScenesDown = canScroll;
    });
-   cursorTrack = host.createCursorTrackSection(0, 0);
+   cursorTrack = host.createCursorTrack(0, 0);
    cursorTrack.addNoteObserver(seqPage.onNotePlay);
 
-   masterTrack = host.createMasterTrackSection(0);
+   masterTrack = host.createMasterTrack(0);
    masterTrack.addVuMeterObserver(8, -1, true, function(level)
    {
       masterVuMeter = level;
    });
 
-   userControls = host.createUserControlsSection(24);
+   userControls = host.createUserControls(24);
 
    for(var u=0; u<24; u++)
    {
@@ -196,7 +200,7 @@ function init()
       control.setLabel("U" + (u+1));
    }
 
-   cursorClip = host.createCursorClipSection(SEQ_BUFFER_STEPS, 128);
+   cursorClip = host.createCursorClip(SEQ_BUFFER_STEPS, 128);
    cursorClip.addStepDataObserver(seqPage.onStepExists);
    cursorClip.addPlayingStepObserver(seqPage.onStepPlay);
    cursorClip.scrollToKey(0);
