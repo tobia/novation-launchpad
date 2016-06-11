@@ -19,6 +19,47 @@ NoteMap.prototype.cellToVelocity = function(x, y)
     return 90;
 };
 
+NoteMap.prototype.getRoot = function()
+{
+    switch (this.rootKey)
+    {
+        case 36:
+            return "C";
+	case 37:
+            return "C#";
+	case 38:
+            return "D";
+	case 39:
+            return "D#";
+	case 40:
+            return "E";
+	case 41:
+            return "F";
+	case 42:
+            return "F#";
+	case 43:
+            return "G";
+	case 44:
+            return "G#";
+	case 45:
+            return "A";
+	case 46:
+            return "A#";
+	case 47:
+            return "B";
+        default:
+            return "?"
+    }
+}
+
+NoteMap.prototype.rotateRoot = function()
+{
+    if ( this.rootKey<47 )
+         this.rootKey++;
+    else
+         this.rootKey = 36;	
+}
+
 function isKeyBlack(key)
 {
     var k = key % 12;
@@ -407,14 +448,14 @@ diatonicNoteMap.scrollLeft = function()
 {
    this.mode = Math.max(0, this.mode - 1);
    updateNoteTranlationTable();
-   host.showPopupNotification("Scale: " + ModernModesNames[this.mode]);
+   host.showPopupNotification("Scale: " + ModernModesNames[this.mode] + " (" + activeNoteMap.getRoot() + ")");
 };
 
 diatonicNoteMap.scrollRight = function()
 {
    this.mode = Math.min(ModernModes.length - 1, this.mode + 1);
    updateNoteTranlationTable();
-   host.showPopupNotification("Scale: " + ModernModesNames[this.mode]);
+   host.showPopupNotification("Scale: " + ModernModesNames[this.mode] + " (" + activeNoteMap.getRoot() + ")");
 };
 
 diatonicNoteMap.canScrollUp = function()

@@ -43,9 +43,19 @@ keysPage.onSceneButton = function(row, isPressed)
    }
    else if (noteMaps[row] != null)
    {
+      oldNoteMap = activeNoteMap.getName();
       activeNoteMap = noteMaps[row];
 
-      host.showPopupNotification("Scale: " + activeNoteMap.getName());
+      if( activeNoteMap.getName() == "Diatonic" ) 
+      {
+            if(oldNoteMap == activeNoteMap.getName())
+                  activeNoteMap.rotateRoot();
+            host.showPopupNotification("Scale: " + activeNoteMap.getName() + " (" + activeNoteMap.getRoot() + ")");
+      }
+      else 
+      {
+            host.showPopupNotification("Scale: " + activeNoteMap.getName());
+      }
 
       updateNoteTranlationTable(activeNoteMap);
    }
