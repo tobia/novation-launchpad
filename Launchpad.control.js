@@ -20,6 +20,8 @@ for(var i=1; i<20; i++)
 
 if(host.platformIsLinux())
 {
+	host.addDeviceNameBasedDiscoveryPair(["Launchpad MIDI 1"], ["Launchpad MIDI 1"]);
+
 	for(var i=1; i<16; i++)
 	{
 	   host.addDeviceNameBasedDiscoveryPair(["Launchpad S " + + i.toString() + " MIDI 1"], ["Launchpad S " + + i.toString() + " MIDI 1"]);
@@ -131,12 +133,100 @@ function init()
 {
    host.getMidiInPort(0).setMidiCallback(onMidi);
 
-   noteInput = host.getMidiInPort(0).createNoteInput("Launchpad", "80????", "90????");
+   noteInput = host.getMidiInPort(0).createNoteInput("", "80????", "90????");
    noteInput.setShouldConsumeEvents(false);
 
    transport = host.createTransport();
 
    trackBank = host.createMainTrackBank(NUM_TRACKS, NUM_SENDS, NUM_SCENES);
+
+   var docState = host.getDocumentState();
+   modeSetting = docState.getEnumSetting("Mode", "Mode", ["Grid", "Drum/Key", "Steps"], "Grid");
+   modeSetting.addValueObserver(function(value)
+   {
+      if (value.equals("Grid"))
+      {
+         setActivePage(gridPage);
+      }
+      else if (value.equals("Drum/Key"))
+      {
+         setActivePage(keysPage);
+      }
+      else if (value.equals("Steps"))
+      {
+         setActivePage(seqPage);
+      }
+   });
+
+   launcherOrientationMode = docState.getEnumSetting("Orientation", "Grid", ["Arranger", "Mixer"], "Arranger");
+   launcherOrientationMode.addValueObserver(function(value)
+   {
+      gridPage.mixerAlignedGrid = value.equals("Mixer");
+   });
+
+   scaleMode = docState.getEnumSetting("Scale", "Drum/Key", ["Piano", "Drums L", "Drums S", "Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian", "Linear14", "Linear25", "Linear34"], "Piano");
+   scaleMode.addValueObserver(function(value)
+   {
+      if (value.equals("Piano"))
+      {
+         setActiveNoteMap(pianoNoteMap);
+      }
+      else if (value.equals("Drums L"))
+      {
+         setActiveNoteMap(largeDrumNoteMap);
+      }
+      else if (value.equals("Drums S"))
+      {
+         setActiveNoteMap(smallDrumNoteMap);
+      }
+      else if (value.equals("Ionian"))
+      {
+         diatonicNoteMap.mode = 0;
+         setActiveNoteMap(diatonicNoteMap);
+      }
+      else if (value.equals("Dorian"))
+      {
+         diatonicNoteMap.mode = 1;
+         setActiveNoteMap(diatonicNoteMap);
+      }
+      else if (value.equals("Phrygian"))
+      {
+         diatonicNoteMap.mode = 2;
+         setActiveNoteMap(diatonicNoteMap);
+      }
+      else if (value.equals("Lydian"))
+      {
+         diatonicNoteMap.mode = 3;
+         setActiveNoteMap(diatonicNoteMap);
+      }
+      else if (value.equals("Mixolydian"))
+      {
+         diatonicNoteMap.mode = 4;
+         setActiveNoteMap(diatonicNoteMap);
+      }
+      else if (value.equals("Aeolian"))
+      {
+         diatonicNoteMap.mode = 5;
+         setActiveNoteMap(diatonicNoteMap);
+      }
+      else if (value.equals("Locrian"))
+      {
+         diatonicNoteMap.mode = 6;
+         setActiveNoteMap(diatonicNoteMap);
+      }
+      else if (value.equals("Linear14"))
+      {
+         setActiveNoteMap(linear14Grid);
+      }
+      else if (value.equals("Linear25"))
+      {
+         setActiveNoteMap(linear25Grid);
+      }
+      else if (value.equals("Linear34"))
+      {
+         setActiveNoteMap(linear34Grid);
+      }
+   });
 
    for(var t=0; t<NUM_TRACKS; t++)
    {
@@ -280,6 +370,11 @@ function setDutyCycle(numerator, denominator)
       sendMidi(0xB0, 0x1F, 16 * (numerator - 9) + (denominator - 3));
    }
 }
+function setActiveNoteMap(notemap)
+{
+   activeNoteMap = notemap;
+   updateNoteTranlationTable(activeNoteMap);
+}
 
 function updateNoteTranlationTable()
 {
@@ -325,6 +420,7 @@ function onMidi(status, data1, data2)
             {
                setActivePage(gridPage);
                gridPage.setTempMode(TempMode.SCENE);
+               modeSetting.set("Grid");
             }
             else gridPage.setTempMode(TempMode.OFF);
             break;
@@ -333,6 +429,7 @@ function onMidi(status, data1, data2)
             if (isPressed)
             {
                setActivePage(keysPage);
+               modeSetting.set("Drum/Key");
             }
             break;
 
@@ -340,6 +437,7 @@ function onMidi(status, data1, data2)
             if (!isPressed)
             {
                setActivePage(seqPage);
+               modeSetting.set("Steps");
             }
 
             IS_EDIT_PRESSED = isPressed;

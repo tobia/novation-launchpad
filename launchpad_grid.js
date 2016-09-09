@@ -46,13 +46,14 @@ gridPage.onShift = function(isPressed)
    {
       this.mixerAlignedGrid = !this.mixerAlignedGrid;
       //this.setTempMode(TempMode.TRACK);
+      launcherOrientationMode.set(this.mixerAlignedGrid ? "Mixer" : "Arranger");
       host.showPopupNotification("Orientation: " + (this.mixerAlignedGrid ? "Mixer" : "Arranger"));
    }
    else
    {
       //this.setTempMode(TempMode.OFF);
    }
-}
+};
 
 gridPage.onSceneButton = function(row, isPressed)
 {
