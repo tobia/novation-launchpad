@@ -164,7 +164,7 @@ function init()
       gridPage.mixerAlignedGrid = value.equals("Mixer");
    });
 
-   scaleMode = docState.getEnumSetting("Scale", "Drum/Key", ["Piano", "Drums L", "Drums S", "Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian", "Linear14", "Linear25", "Linear34"], "Piano");
+   scaleMode = docState.getEnumSetting("Scale", "Drum/Key", ["Piano", "Drums L", "Drums S", "Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian", "Strings"], "Piano");
    scaleMode.addValueObserver(function(value)
    {
       if (value.equals("Piano"))
@@ -214,17 +214,9 @@ function init()
          diatonicNoteMap.mode = 6;
          setActiveNoteMap(diatonicNoteMap);
       }
-      else if (value.equals("Linear14"))
+      else if (value.equals("Strings"))
       {
-         setActiveNoteMap(linear14Grid);
-      }
-      else if (value.equals("Linear25"))
-      {
-         setActiveNoteMap(linear25Grid);
-      }
-      else if (value.equals("Linear34"))
-      {
-         setActiveNoteMap(linear34Grid);
+         setActiveNoteMap(stringsNoteMap);
       }
    });
 

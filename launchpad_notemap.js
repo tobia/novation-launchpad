@@ -485,60 +485,86 @@ diatonicNoteMap.getName = function()
 
 //----------------------------------------------------------------------------------------------------------
 
-var linear34Grid = new LinearGridNoteMap([3], 4);
-var linear25Grid = new LinearGridNoteMap([2], 5);
-var linear14Grid = new LinearGridNoteMap([1], 4);
-var noteMap23_12 = new LinearGridNoteMap([2, 3], 6);
-var noteMap13_12 = new LinearGridNoteMap([1, 3], 6);
+stringsNoteMap = new NoteMap();
+
+stringsNoteMap.offset = 47; // bottom-left corner note, default B2
+
+stringsNoteMap.getName = function() { 
+   return "Strings"; 
+}
+
+stringsNoteMap.cellToKey = function(x, y) {
+   var key = this.offset + (7-y) * 5 + x;
+   if (key < 0 || key > 127) return -1;
+   return key;
+};
+
+stringsNoteMap.drawCell = function(x, y, highlight) {
+   var key = this.cellToKey(x, y);
+
+   var colour;
+   if (key == -1) {
+      // non-existant note
+      colour = Colour.OFF 
+   } else if (noteOn[key]) {
+      // note currently being played
+      colour = Colour.RED_FULL;
+   } else if (key % 12 == 0) {
+      // C note
+      colour = Colour.AMBER_FULL;
+   } else if (! this.keyIsBlack(key)) {
+      // other white keys
+      colour = Colour.GREEN_FULL;
+   } else {
+      // black keys are not highlighted
+      colour = Colour.OFF;
+   }
+
+   setCellLED(x, y, colour);
+};
+
+stringsNoteMap.canScrollDown = function() { 
+   return this.offset < 127-35-11;
+}
+
+stringsNoteMap.canScrollUp = function() { 
+   return this.offset > -7+11;
+}
+
+stringsNoteMap.canScrollLeft = function() { 
+   return this.offset < 127-35;
+}
+
+stringsNoteMap.canScrollRight = function() { 
+   return this.offset > -7;
+}
+
+stringsNoteMap.scrollDown = function() {
+   if (!this.canScrollDown()) return;
+   this.offset += 12;
+   updateNoteTranlationTable();
+};
+
+stringsNoteMap.scrollUp = function() {
+   if (!this.canScrollUp()) return;
+   this.offset -= 12;
+   updateNoteTranlationTable();
+};
+
+stringsNoteMap.scrollLeft = function() {
+   if (!this.canScrollLeft()) return;
+   this.offset += 1;
+   updateNoteTranlationTable();
+};
+
+stringsNoteMap.scrollRight = function() {
+   if (!this.canScrollRight()) return;
+   this.offset -= 1;
+   updateNoteTranlationTable();
+};
 
 //----------------------------------------------------------------------------------------------------------
 
-linear14Grid.canScrollRight = function()
-{
-   return true;
-};
-
-linear14Grid.scrollRight = function()
-{
-   activeNoteMap = linear34Grid;
-   updateNoteTranlationTable();
-};
-
-linear34Grid.canScrollLeft = function()
-{
-   return true;
-};
-
-linear34Grid.scrollLeft = function()
-{
-   activeNoteMap = linear14Grid;
-   updateNoteTranlationTable();
-};
-
-linear34Grid.canScrollRight = function()
-{
-   return true;
-};
-
-linear34Grid.scrollRight = function()
-{
-   activeNoteMap = linear25Grid;
-   updateNoteTranlationTable();
-};
-
-linear25Grid.canScrollLeft = function()
-{
-   return true;
-};
-
-linear25Grid.scrollLeft = function()
-{
-   activeNoteMap = linear34Grid;
-   updateNoteTranlationTable();
-};
-
-//----------------------------------------------------------------------------------------------------------
-
-var noteMaps = [pianoNoteMap, largeDrumNoteMap, diatonicNoteMap, linear14Grid, null, null, null, null];
+var noteMaps = [pianoNoteMap, largeDrumNoteMap, diatonicNoteMap, stringsNoteMap, null, null, null, null];
 
 var activeNoteMap = pianoNoteMap;
